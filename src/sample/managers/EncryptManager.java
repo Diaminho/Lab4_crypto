@@ -31,6 +31,10 @@ public class EncryptManager {
         feistelСipher=new FeistelСipher();
         feistelСipher.getFile();
 
+        FeistelСipher feistel=new FeistelСipher();
+        feistel.setRounds(3);
+        feistel.test();
+
     }
 
 }
