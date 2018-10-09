@@ -1,10 +1,8 @@
 package sample;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.math.BigInteger;
 
 public class FeistelСipher {
     private int rounds;
@@ -43,6 +41,7 @@ public class FeistelСipher {
         else return "None";
     }
 
+
     public Long[] doFeist(Long[] a, boolean reverse)
     {
         int round = reverse? rounds: 1;
@@ -54,7 +53,7 @@ public class FeistelСipher {
             if (i < rounds-1) // если не последний раунд
             {
                 Long t = res[0];
-                res[0] = res[1] ^ func(res[0], round);
+                res[0]=res[1] ^ func(res[0], round);
                 res[1] = t;
             }
             else // последний раунд
@@ -102,6 +101,22 @@ public class FeistelСipher {
 
     }
 
+    public static void saveInfoToFile(String filePath, String[] info){
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+            for(int i=0;i<info.length;i++){
+                bw.write(info[i]);
+            }
+
+            //System.out.println("Исходный текст: "+infoString);
+            //System.out.println((int)'\n');
+        }
+        catch (IOException e){
+            System.out.println(e);
+        }
+
+    }
+
+
     public String[] getBlockInfoBin(String info){
         int blockCount=(int)Math.ceil((double)info.length()/blockSize);
         //System.out.println(info.length());
@@ -128,10 +143,10 @@ public class FeistelСipher {
             for (int j=0;j<blockSize;j++) {
                 //System.out.println(blockInfoBin[i].length());
                 if(j>=blockInfo[i].length()){
-                    blockInfoBin[i]+="11111111111";
+                    blockInfoBin[i]+="0000000000010000";
                 }
                 else {
-                    blockInfoBin[i]+= asBitString(Integer.toBinaryString((int) blockInfo[i].charAt(j)), 11);
+                    blockInfoBin[i]+= asBitString(Integer.toBinaryString((int) blockInfo[i].charAt(j)), 16);
                 }
                 //System.out.println(blockInfoBin[i].length());
             }
@@ -170,8 +185,8 @@ public class FeistelСipher {
     public String getStringFromBinary(String binStr){
         String strText="";
         //System.out.println(binStr.length());
-        for (int i=0;i<binStr.length();i+=11){
-            strText+=(char)Integer.parseInt(binStr.substring(i,i+11),2);
+        for (int i=0;i<binStr.length();i+=16){
+            strText+=(char)Integer.parseInt(binStr.substring(i,i+16),2);
         }
         return strText;
 

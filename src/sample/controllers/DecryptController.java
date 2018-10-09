@@ -5,44 +5,39 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sample.managers.DecryptManager;
 import sample.managers.EncryptManager;
 
 import java.io.IOException;
 
-public class EncryptController {
+public class DecryptController {
     private static Parent root;
 
-    private static EncryptManager encryptManager;
+    private static DecryptManager decryptManager;
 
     private static Stage primaryStage;
 
 
-    public EncryptController(Stage primaryStage) throws IOException {
-        root = FXMLLoader.load(getClass().getResource("../fxml/encrypt.fxml"));
+    public DecryptController(Stage primaryStage) throws IOException {
+        root = FXMLLoader.load(getClass().getResource("../fxml/decrypt.fxml"));
         this.primaryStage=primaryStage;
-        primaryStage.setTitle("Шифрование");
-        encryptManager = new EncryptManager(root);
+        primaryStage.setTitle("Дешифрование");
+        decryptManager = new DecryptManager(root);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 
-    public EncryptController(){
+    public DecryptController(){
 
     }
 
     @FXML
     public void onChooseFile(){
-        encryptManager.onChooseFile();
+        decryptManager.onChooseFile();
     }
 
     @FXML
-    public void onSaveEncrTextButton(){
-        encryptManager.onSaveEncrTextButton();
-        //System.out.println(fileName);
-    }
-
-    @FXML
-    public void onMenuButton(){
+    public void onGoToMenu(){
         primaryStage.close();
         try {
             new MainController(primaryStage);
@@ -50,5 +45,4 @@ public class EncryptController {
             System.out.println(e);
         }
     }
-
 }

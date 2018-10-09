@@ -25,7 +25,7 @@ public class MainController {
     public void onToEncryptButton() {
         primaryStage.close();
         try {
-            new EncryptController(new Stage());
+            new EncryptController(primaryStage);
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -36,12 +36,12 @@ public class MainController {
     @FXML
     public void onToDecryptButton() {
         primaryStage.close();
-        /*try {
-            new DecryptController(new Stage());
+        try {
+            new DecryptController(primaryStage);
         } catch (Exception e) {
             e.printStackTrace();
 
-        }*/
+        }
     }
 
 }
