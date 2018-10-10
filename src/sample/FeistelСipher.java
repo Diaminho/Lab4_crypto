@@ -41,7 +41,6 @@ public class FeistelСipher {
         else return "None";
     }
 
-
     public Long[] doFeist(Long[] a, boolean reverse)
     {
         int round = reverse? rounds: 1;
@@ -65,12 +64,39 @@ public class FeistelСipher {
         return res;
     }
 
+    /*
+    public String[] doFeist(String[] a, boolean reverse)
+    {
+        int round = reverse? rounds: 1;
+        String[] res=new String[2];
+        res[0] = a[0];
+        res[1] = a[1];
+        for (int i = 0; i < rounds; i++)
+        {
+            if (i < rounds-1) // если не последний раунд
+            {
+                String t = res[0];
+                res[0]=Long.toBinaryString(Long.parseLong(res[1],2) ^ func(Long.parseLong(res[0],2), round));
+                res[0]=asBitString(res[0],16*blockSize/2);
+                res[1] = t;
+                res[1]=asBitString(res[1],16*blockSize/2);
+            }
+            else // последний раунд
+            {
+                res[1] = Long.toBinaryString(Long.parseLong(res[1],2) ^ func(Long.parseLong(res[0],2), round));
+                res[1]=asBitString(res[1],16*blockSize/2);
+            }
+            round += reverse? -1: 1;
+        }
+        return res;
+    }
+    */
 
     private Long func(Long b, int k) {
-        return b + k;
+        return b ^ k;
     }
 
-
+/*
     public void test() {
         Long[] a = new Long[2];
         a[0] = Long.valueOf(10000000);
@@ -79,7 +105,7 @@ public class FeistelСipher {
         System.out.println("a0: "+a[0]+" a1: "+a[1]);
         doFeist(a, true);
         System.out.println("a0: "+a[0]+" a1: "+a[1]);
-    }
+    }*/
 
 
     public String getInfoFromFile(String filePath){
@@ -143,7 +169,7 @@ public class FeistelСipher {
             for (int j=0;j<blockSize;j++) {
                 //System.out.println(blockInfoBin[i].length());
                 if(j>=blockInfo[i].length()){
-                    blockInfoBin[i]+="0000000000010000";
+                    blockInfoBin[i]+="0000000000101011";
                 }
                 else {
                     blockInfoBin[i]+= asBitString(Integer.toBinaryString((int) blockInfo[i].charAt(j)), 16);
@@ -191,4 +217,80 @@ public class FeistelСipher {
         return strText;
 
     }
+
+    public int countChangedBits(int position, String block){
+        int count=0;
+        int round = 0;
+        StringBuilder tmp_str=new StringBuilder(block);
+        String[] unchanged=getLeftRightFromBlock(tmp_str.toString());
+
+        if (tmp_str.charAt(position-1)=='0'){
+            tmp_str.setCharAt(position-1,'1');
+        }
+        else {
+            tmp_str.setCharAt(position-1,'0');
+        }
+        String[] changed=getLeftRightFromBlock(tmp_str.toString());
+
+        Long[] unch=getNumberFromBlockLR(unchanged);
+        Long[] ch=getNumberFromBlockLR(changed);
+
+
+        System.out.println("Место изменения: "+(position-1));
+        System.out.println("Исходное число: "+unch[0]+" "+unch[1]);
+        System.out.println("Измененн число: "+ch[0]+" "+ch[1]);
+
+        String unchStr;
+        String chStr;
+
+        for (int i = 0; i < rounds; i++)
+        {
+            if (i < rounds-1) // если не последний раунд
+            {
+                Long tU = unch[0];
+                unch[0]= unch[1]^func(unch[0],round);
+                unch[1] = tU;
+
+                Long tC = ch[0];
+                ch[0]= ch[1]^func(ch[0],round);
+                ch[1] = tC;
+
+
+            }
+            else // последний раунд
+            {
+                ch[1]= ch[1]^func(ch[0],round);
+                unch[1]= unch[1]^func(unch[0],round);
+                //res[1] = res[1] ^ func(res[0], round);
+
+            }
+
+            unchStr=asBitString(Long.toBinaryString(unch[0]),16*blockSize/2)+asBitString(Long.toBinaryString(unch[1]),16*blockSize/2);
+            chStr=asBitString(Long.toBinaryString(ch[0]),16*blockSize/2)+asBitString(Long.toBinaryString(ch[1]),16*blockSize/2);
+
+
+            for (int ii=0;ii<unchStr.length();ii++){
+                if (unchStr.charAt(ii)!=chStr.charAt(ii)) {
+                    count++;
+                }
+            }
+
+
+            System.out.println("Раунд: "+round);
+            System.out.println("Количество изменений: "+count);
+
+            round += 1;
+        }
+
+
+        //System.out.println("зашифрованная исходная строка: "+resUn[0]+resUn[1]);
+        //System.out.println("зашифрованная измененн строка: "+resCh[0]+resCh[1]);
+
+        //System.out.println("зашифрованная исходная строка: "+Long.parseLong(resUn[0])+" "+Long.parseLong(resUn[1]));
+
+
+        return count;
+    }
+
+
 }

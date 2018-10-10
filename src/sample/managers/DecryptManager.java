@@ -33,7 +33,7 @@ public class DecryptManager {
     public void onChooseFile(){
         feistelСipher=new FeistelСipher();
         String fileName=feistelСipher.getFile();
-        feistelСipher.setRounds(3);
+        feistelСipher.setRounds(10);
         feistelСipher.setBlockSize(8);
         //feistelСipher.test();
         String info=feistelСipher.getInfoFromFile(fileName);
@@ -45,15 +45,17 @@ public class DecryptManager {
             blocksLR[i]=feistelСipher.getLeftRightFromBlock(blockInfo[i]);
         }
 
+
         Long [][] numbersLR=new Long[blocksLR.length][2];
         for (int i=0;i<numbersLR.length;i++){
             numbersLR[i]=feistelСipher.getNumberFromBlockLR(blocksLR[i]);
         }
 
+
         //System.out.println("1111112222222");
 
 
-        Long[][] decryptedNumbersLR=new Long[numbersLR.length][2];
+        Long[][] decryptedNumbersLR=new Long[blocksLR.length][2];
         for (int i=0;i<decryptedNumbersLR.length;i++) {
             decryptedNumbersLR[i]=feistelСipher.doFeist(numbersLR[i], true);
         }

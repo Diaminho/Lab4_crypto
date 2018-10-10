@@ -40,46 +40,25 @@ public class EncryptManager {
     public void onChooseFile(){
         feistelСipher=new FeistelСipher();
         String fileName=feistelСipher.getFile();
-        feistelСipher.setRounds(3);
+        feistelСipher.setRounds(10);
         feistelСipher.setBlockSize(8);
         //feistelСipher.test();
         String info=feistelСipher.getInfoFromFile(fileName);
         originTextID.setText(info);
         //System.out.println("info "+info);
         String[] blockInfo=feistelСipher.getBlockInfoBin(info);
-        /*
-        for(int i=0;i<blockInfo.length;i++){
-            System.out.println("BLOCK " + i+" "+blockInfo[i]+" length "+blockInfo[i].length());
-        }
-        */
+        feistelСipher.countChangedBits(13,blockInfo[0]);
 
         String[][] blocksLR=new String[blockInfo.length][2];
         for (int i=0;i<blocksLR.length;i++){
             blocksLR[i]=feistelСipher.getLeftRightFromBlock(blockInfo[i]);
         }
 
-        /*
-        for (int i=0;i<blocksLR.length;i++){
-            System.out.println("BLOCK: "+i);
-            for (int j=0;j<blocksLR[i].length;j++){
-                System.out.print(blocksLR[i][j]+" | ");
-            }
-            System.out.println();
-        }
-        */
         Long[][] numbersLR=new Long[blocksLR.length][2];
         for (int i=0;i<numbersLR.length;i++){
             numbersLR[i]=feistelСipher.getNumberFromBlockLR(blocksLR[i]);
         }
 
-        /*
-        for (int i=0;i<numbersLR.length;i++){
-            System.out.println("Block: "+i);
-            for(int j=0;j<numbersLR[i].length;j++){
-                System.out.print(numbersLR[i][j]+" ");
-            }
-        }
-        */
 
         Long[][] encryptedNumbersLR=new Long[numbersLR.length][2];
         for (int i=0;i<encryptedNumbersLR.length;i++) {
@@ -106,6 +85,7 @@ public class EncryptManager {
         }
 
         encryptedTextID.setText(encrText);
+        System.out.println(Long.toBinaryString(43));
 
     }
 
