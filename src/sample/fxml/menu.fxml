@@ -17,5 +17,6 @@
    <children>
       <Button fx:id="toEncryptButton" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#onToEncryptButton" prefHeight="26.0" prefWidth="182.0" text="Шифрование" textAlignment="CENTER" textOverrun="WORD_ELLIPSIS" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" />
       <Button fx:id="toDecryptButton" mnemonicParsing="false" onAction="#onToDecryptButton" text="Дешифрование" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+      <Button mnemonicParsing="false" onAction="#onGoToAvalancheButton" text="Исследовать лавинный эффект" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
    </children>
 </GridPane>

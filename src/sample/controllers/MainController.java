@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sample.managers.AvalancheManager;
 
 import java.io.IOException;
 
@@ -38,6 +39,18 @@ public class MainController {
         primaryStage.close();
         try {
             new DecryptController(primaryStage);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+
+
+    @FXML
+    public void onGoToAvalancheButton() {
+        primaryStage.close();
+        try {
+            new AvalancheController(primaryStage);
         } catch (Exception e) {
             e.printStackTrace();
 
