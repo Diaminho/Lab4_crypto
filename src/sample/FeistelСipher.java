@@ -1,16 +1,16 @@
 package sample;
 
+import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import java.io.*;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class FeistelСipher {
     private int rounds;
     private int blockSize;
 
-    public FeistelСipher(){
-
-    }
+    public FeistelСipher(){ }
 
     public int getBlockSize() {
         return blockSize;
@@ -41,27 +41,77 @@ public class FeistelСipher {
         else return "None";
     }
 
-    public Long[] doFeist(Long[] a, boolean reverse)
-    {
+    public String[] doFeist(String[] a, boolean reverse) {
+        int[][] a_int=new int[2][16*blockSize/2];
+        a_int[0]=binStrToIntArray(a[0]);
+        a_int[1]=binStrToIntArray(a[1]);
+
+        String func_res;
         int round = reverse? rounds: 1;
-        Long[] res=new Long[2];
-        res[0] = a[0];
-        res[1] = a[1];
+        int[] t;
         for (int i = 0; i < rounds; i++)
         {
+
             if (i < rounds-1) // если не последний раунд
             {
-                Long t = res[0];
-                res[0]=res[1] ^ func(res[0], round);
-                res[1] = t;
+                t = Arrays.copyOf(a_int[0], a_int[0].length);
+                func_res=asBitString(func(asBitString(intArrayToBinStr(a_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
+                int [] func_resI=binStrToIntArray(func_res);
+
+                for (int ii=0;ii<a_int[0].length;ii++){
+                    a_int[0][ii]=a_int[1][ii]^func_resI[ii];
+                }
+
+                a_int[1] = Arrays.copyOf(t, t.length);
             }
+
             else // последний раунд
             {
-                res[1] = res[1] ^ func(res[0], round);
+
+                func_res=asBitString(func(asBitString(intArrayToBinStr(a_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
+                int [] func_resI=binStrToIntArray(func_res);
+
+                for (int ii=0;ii<a_int[1].length;ii++){
+                    a_int[1][ii]=a_int[1][ii]^func_resI[ii];
+                }
             }
             round += reverse? -1: 1;
         }
+
+        String[] resStr=new String[2];
+        resStr[0]=intArrayToBinStr(a_int[0]);
+        resStr[1]=intArrayToBinStr(a_int[1]);
+
+        return resStr;
+    }
+
+
+    public int[] binStrToIntArray(String binStr){
+        int[] res=new int[binStr.length()];
+        //System.out.println("binStrToIntArray");
+        //System.out.println(binStr);
+        for (int i=0;i<res.length;i++){
+            res[i]=Integer.parseInt(String.valueOf(binStr.charAt(i)));
+            //System.out.print(res[i]);
+        }
+        //System.out.println();
+        //System.out.println("binStrToIntArray");
         return res;
+    }
+
+
+    public String intArrayToBinStr(int[] a){
+        StringBuffer res=new StringBuffer();
+        //System.out.println("intArrayToBinStr");
+        for (int i=0;i<a.length;i++){
+            //System.out.println("I ++++"+i);
+            //System.out.print(a[i]);
+            res.append(Character.forDigit(a[i], 10));
+        }
+        //System.out.println();
+        //System.out.println(res);
+        //System.out.println("intArrayToBinStr");
+        return res.toString();
     }
 
     /*
@@ -92,8 +142,18 @@ public class FeistelСipher {
     }
     */
 
-    private Long func(Long b, int k) {
-        return b ^ k;
+    public String func(String b, String k) {
+        int[] tmp_b=binStrToIntArray(b);
+        int[] tmp_k=binStrToIntArray(k);
+        int[] res=new int[tmp_b.length];
+        StringBuilder resStr=new StringBuilder();
+        for (int i=0;i<res.length;i++){
+            res[i]=tmp_k[i]^tmp_b[i];
+            resStr.insert(i,res[i]);
+        }
+
+        //System.out.println(resStr);
+        return resStr.toString();
     }
 
 /*
@@ -116,7 +176,7 @@ public class FeistelСipher {
             while ((tmpStr = br.readLine()) != null) {
                 infoString += tmpStr+"\n";
             }
-            System.out.println("Исходный текст: "+infoString);
+            //System.out.println("Исходный текст: "+infoString);
             return infoString;
             //System.out.println((int)'\n');
         }
@@ -169,7 +229,7 @@ public class FeistelСipher {
             for (int j=0;j<blockSize;j++) {
                 //System.out.println(blockInfoBin[i].length());
                 if(j>=blockInfo[i].length()){
-                    blockInfoBin[i]+="0000000000101011";
+                    blockInfoBin[i]+="1111111111111111";
                 }
                 else {
                     blockInfoBin[i]+= asBitString(Integer.toBinaryString((int) blockInfo[i].charAt(j)), 16);
@@ -218,9 +278,11 @@ public class FeistelСipher {
 
     }
 
+
     public int countChangedBits(int position, String block){
         int count=0;
-        int round = 0;
+        //int round = 0;
+
         StringBuilder tmp_str=new StringBuilder(block);
         String[] unchanged=getLeftRightFromBlock(tmp_str.toString());
 
@@ -230,67 +292,82 @@ public class FeistelСipher {
         else {
             tmp_str.setCharAt(position-1,'0');
         }
+
         String[] changed=getLeftRightFromBlock(tmp_str.toString());
 
-        Long[] unch=getNumberFromBlockLR(unchanged);
-        Long[] ch=getNumberFromBlockLR(changed);
+        int[][] a_int=new int[2][16*blockSize/2];
+        a_int[0]=binStrToIntArray(unchanged[0]);
+        a_int[1]=binStrToIntArray(unchanged[0]);
 
+        int[][] b_int=new int[2][16*blockSize/2];
+        b_int[0]=binStrToIntArray(changed[0]);
+        b_int[1]=binStrToIntArray(changed[0]);
 
-        System.out.println("Место изменения: "+(position-1));
-        System.out.println("Исходное число: "+unch[0]+" "+unch[1]);
-        System.out.println("Измененн число: "+ch[0]+" "+ch[1]);
-
-        String unchStr;
-        String chStr;
-
+        String func_res, func_resB;
+        int round = 1;
+        int[] t;
+        int[] t1;
         for (int i = 0; i < rounds; i++)
         {
+
             if (i < rounds-1) // если не последний раунд
             {
-                Long tU = unch[0];
-                unch[0]= unch[1]^func(unch[0],round);
-                unch[1] = tU;
+                t = Arrays.copyOf(a_int[0], a_int[0].length);
+                t1= Arrays.copyOf(b_int[0], b_int[0].length);
+                func_res=asBitString(func(asBitString(intArrayToBinStr(a_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
+                func_resB=asBitString(func(asBitString(intArrayToBinStr(b_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
+                int [] func_resI=binStrToIntArray(func_res);
+                int [] func_resIB=binStrToIntArray(func_resB);
 
-                Long tC = ch[0];
-                ch[0]= ch[1]^func(ch[0],round);
-                ch[1] = tC;
+                for (int ii=0;ii<a_int[0].length;ii++){
+                    a_int[0][ii]=a_int[1][ii]^func_resI[ii];
+                    b_int[0][ii]=b_int[1][ii]^func_resIB[ii];
+                    if (a_int[0][ii]!=b_int[0][ii]){
+                        count++;
+                    }
+                }
+                a_int[1] = Arrays.copyOf(t, t.length);
+                b_int[1] = Arrays.copyOf(t1, t1.length);
 
+                for (int ii=0;ii<a_int[1].length;ii++){
+                    if (a_int[1][ii]!=b_int[1][ii]){
+                        count++;
+                    }
+                }
 
             }
+
             else // последний раунд
             {
-                ch[1]= ch[1]^func(ch[0],round);
-                unch[1]= unch[1]^func(unch[0],round);
-                //res[1] = res[1] ^ func(res[0], round);
 
-            }
+                func_res=asBitString(func(asBitString(intArrayToBinStr(a_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
+                int [] func_resI=binStrToIntArray(func_res);
 
-            unchStr=asBitString(Long.toBinaryString(unch[0]),16*blockSize/2)+asBitString(Long.toBinaryString(unch[1]),16*blockSize/2);
-            chStr=asBitString(Long.toBinaryString(ch[0]),16*blockSize/2)+asBitString(Long.toBinaryString(ch[1]),16*blockSize/2);
+                func_resB=asBitString(func(asBitString(intArrayToBinStr(b_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
+                int [] func_resIB=binStrToIntArray(func_resB);
 
 
-            for (int ii=0;ii<unchStr.length();ii++){
-                if (unchStr.charAt(ii)!=chStr.charAt(ii)) {
-                    count++;
+                for (int ii=0;ii<a_int[1].length;ii++){
+                    a_int[1][ii]=a_int[1][ii]^func_resI[ii];
+                    b_int[1][ii]=b_int[1][ii]^func_resI[ii];
+
+                    if (a_int[1][ii]!=b_int[1][ii]){
+                        count++;
+                    }
+
                 }
             }
 
-
-            System.out.println("Раунд: "+round);
-            System.out.println("Количество изменений: "+count);
-
-            round += 1;
+            System.out.println("Раунд "+i+" Число изменившихся бит"+count);
+            round ++;
         }
-
-
-        //System.out.println("зашифрованная исходная строка: "+resUn[0]+resUn[1]);
-        //System.out.println("зашифрованная измененн строка: "+resCh[0]+resCh[1]);
-
-        //System.out.println("зашифрованная исходная строка: "+Long.parseLong(resUn[0])+" "+Long.parseLong(resUn[1]));
-
 
         return count;
     }
 
+
+    public String deleteSymbol(String str, char symbol) {
+        return str.substring(0,str.indexOf(symbol));
+    }
 
 }

@@ -11,18 +11,20 @@ import sample.managers.InputFileNameManager;
 
 import java.io.IOException;
 
-public class InputFileNameController{
-
+public class InputFileNameController {
     private static InputFileNameManager inputFileNameManager;
     private static Stage primaryStage;
     private static Parent root;
+    private static EncryptController encryptController;
 
-    public InputFileNameController(Stage primaryStage) throws IOException {
+
+    public InputFileNameController(Stage primaryStage, EncryptController encryptController) throws IOException {
         root = FXMLLoader.load(getClass().getResource("../fxml/inputFileName.fxml"));
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Сохрнанение зашифрованной информации");
         inputFileNameManager = new InputFileNameManager(root);
         primaryStage.setScene(new Scene(root));
+        this.encryptController=encryptController;
         primaryStage.show();
     }
 
@@ -32,7 +34,9 @@ public class InputFileNameController{
 
     @FXML
     public void onOkSaveButton() {
-        inputFileNameManager.onOkSaveButton();
+        encryptController.getEncryptManager().setFileName(inputFileNameManager.onOkSaveButton());
+        encryptController.getEncryptManager().saveInfo();
+        System.out.println(encryptController.getEncryptManager().getFileName());
         primaryStage.close();
     }
 

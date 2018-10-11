@@ -10,7 +10,7 @@
 
 <AnchorPane prefHeight="492.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.AvalancheController">
    <children>
-      <LineChart fx:id="avalancheChartID" layoutX="91.0" layoutY="66.0" prefHeight="361.0" prefWidth="460.0" title="Лавинный эффект" visible="false">
+      <LineChart fx:id="avalancheChartID" layoutX="91.0" layoutY="66.0" prefHeight="361.0" prefWidth="460.0" title="Лавинный эффект">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>

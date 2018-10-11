@@ -2,10 +2,7 @@ package sample.managers;
 
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import sample.controllers.EncryptController;
 
 public class InputFileNameManager {
     private static Parent root;
@@ -23,8 +20,8 @@ public class InputFileNameManager {
     }
 
     @FXML
-    public void onOkSaveButton() {
-        EncryptManager.setFileName(encrFileNameID.getText());
+    public String onOkSaveButton() {
+        return encrFileNameID.getText();
 
     }
 
@@ -32,4 +29,6 @@ public class InputFileNameManager {
     public void onCancelButton() {
 
     }
-}
+
+
+    }

@@ -5,25 +5,27 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import sample.FeistelСipher;
 import sample.controllers.InputFileNameController;
-import sample.controllers.MainController;
-
-import java.math.BigInteger;
 
 public class EncryptManager {
     private static Parent root;
     FeistelСipher feistelСipher;
     String[] ecnrString;
-    private static String fileName;
+    private String fileName;
 
     @FXML
     Button chooseFileButton;
     TextArea originTextID;
     TextArea encryptedTextID;
+    TextField inputRoundCountID;
+    TextField inputBlockSizeID;
 
+
+    public String getFileName() {
+        return fileName;
+    }
 
     public EncryptManager(Parent root){
         this.root=root;
@@ -34,18 +36,41 @@ public class EncryptManager {
         chooseFileButton=(Button) root.lookup("#chooseFileButton");
         originTextID=(TextArea) root.lookup("#originTextID");
         encryptedTextID=(TextArea) root.lookup("#encryptedTextID");
+        inputRoundCountID=(TextField) root.lookup("#inputRoundCountID");
+        inputBlockSizeID=(TextField) root.lookup("#inputBlockSizeID");
     }
 
     @FXML
     public void onChooseFile(){
         feistelСipher=new FeistelСipher();
-        String fileName=feistelСipher.getFile();
-        feistelСipher.setRounds(10);
-        feistelСipher.setBlockSize(8);
+        fileName=feistelСipher.getFile();
+        //feistelСipher.setRounds(3);
+        //feistelСipher.setBlockSize(16);
         //feistelСipher.test();
         String info=feistelСipher.getInfoFromFile(fileName);
         originTextID.setText(info);
         //System.out.println("info "+info);
+    }
+
+    @FXML
+    public void onSaveEncrTextButton(){
+
+        //System.out.println(fileName);
+
+    }
+
+    public void saveInfo(){
+        FeistelСipher.saveInfoToFile(fileName,ecnrString);
+    }
+
+
+
+    @FXML
+    public void onEncryptButton(){
+        String info=feistelСipher.getInfoFromFile(fileName);
+        //originTextID.setText(info);
+        feistelСipher.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
+        feistelСipher.setRounds(Integer.parseInt(inputRoundCountID.getText()));
         String[] blockInfo=feistelСipher.getBlockInfoBin(info);
         feistelСipher.countChangedBits(13,blockInfo[0]);
 
@@ -54,15 +79,10 @@ public class EncryptManager {
             blocksLR[i]=feistelСipher.getLeftRightFromBlock(blockInfo[i]);
         }
 
-        Long[][] numbersLR=new Long[blocksLR.length][2];
-        for (int i=0;i<numbersLR.length;i++){
-            numbersLR[i]=feistelСipher.getNumberFromBlockLR(blocksLR[i]);
-        }
-
-
-        Long[][] encryptedNumbersLR=new Long[numbersLR.length][2];
+        String[][] encryptedNumbersLR=new String[blocksLR.length][2];
         for (int i=0;i<encryptedNumbersLR.length;i++) {
-            encryptedNumbersLR[i]=feistelСipher.doFeist(numbersLR[i], false);
+            //System.out.println("blocksLR"+ blocksLR[i][1]);
+            encryptedNumbersLR[i]=feistelСipher.doFeist(blocksLR[i], false);
         }
 
         System.out.println("зашифр");
@@ -72,8 +92,8 @@ public class EncryptManager {
 
         String[] encrBinStr=new String[encryptedNumbersLR.length];
         for (int i=0;i<encryptedNumbersLR.length;i++) {
-            encrBinStr[i]=feistelСipher.asBitString(Long.toBinaryString(encryptedNumbersLR[i][0]),16*feistelСipher.getBlockSize()/2)+feistelСipher.asBitString(Long.toBinaryString(encryptedNumbersLR[i][1]),16*feistelСipher.getBlockSize()/2);
-            System.out.println(i+" len "+encrBinStr[i].length());
+            encrBinStr[i]=feistelСipher.asBitString(encryptedNumbersLR[i][0],16*feistelСipher.getBlockSize()/2)+feistelСipher.asBitString(encryptedNumbersLR[i][1],16*feistelСipher.getBlockSize()/2);
+            //System.out.println(i+" len "+encrBinStr[i].length());
         }
 
         ecnrString=new String[encrBinStr.length];
@@ -85,31 +105,14 @@ public class EncryptManager {
         }
 
         encryptedTextID.setText(encrText);
-        System.out.println(Long.toBinaryString(43));
-
-    }
-
-    @FXML
-    public void onSaveEncrTextButton(){
-        try {
-            new InputFileNameController(new Stage());
-            //String fileName=inputFileNameController.getFileName();
-            //System.out.println(fileName);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        //encrFileID.setText(fileName);
-        System.out.println(fileName);
-        FeistelСipher.saveInfoToFile("text_enc.txt",ecnrString);
-
 
     }
 
 
-    public static void setFileName(String text){
+    public  void setFileName(String text){
         fileName=text;
     }
+
 
     @FXML
     public void onMenuButton(){

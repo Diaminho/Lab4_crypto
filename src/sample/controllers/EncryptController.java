@@ -16,12 +16,15 @@ public class EncryptController {
 
     private static Stage primaryStage;
 
+    public EncryptManager getEncryptManager() {
+        return encryptManager;
+    }
 
     public EncryptController(Stage primaryStage) throws IOException {
         root = FXMLLoader.load(getClass().getResource("../fxml/encrypt.fxml"));
         this.primaryStage=primaryStage;
         primaryStage.setTitle("Шифрование");
-        encryptManager = new EncryptManager(root);
+        this.encryptManager = new EncryptManager(root);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
@@ -36,8 +39,21 @@ public class EncryptController {
     }
 
     @FXML
+    public void onEncryptButton(){
+        encryptManager.onEncryptButton();
+    }
+
+
+    @FXML
     public void onSaveEncrTextButton(){
         encryptManager.onSaveEncrTextButton();
+        try {
+            new InputFileNameController(new Stage(), this);
+            //String fileName=inputFileNameController.getFileName();
+            //System.out.println(fileName);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         //System.out.println(fileName);
     }
 

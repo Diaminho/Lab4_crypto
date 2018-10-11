@@ -32,6 +32,7 @@ public class AvalancheController {
     @FXML
     public void onBuildChart() {
         avalancheManager.onBuildChart();
+        //primaryStage.show();
     }
 
     @FXML

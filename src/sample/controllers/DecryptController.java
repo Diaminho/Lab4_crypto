@@ -37,6 +37,11 @@ public class DecryptController {
     }
 
     @FXML
+    public void onDecryptButton(){
+        decryptManager.onDecryptButton();
+    }
+
+    @FXML
     public void onGoToMenu(){
         primaryStage.close();
         try {
@@ -45,4 +50,9 @@ public class DecryptController {
             System.out.println(e);
         }
     }
+
+    public void onSaveButton(){
+        decryptManager.onSaveButton();
+    }
+
 }
