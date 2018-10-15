@@ -8,16 +8,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="492.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.AvalancheController">
+<AnchorPane fx:id="anchorPaneID" prefHeight="492.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.AvalancheController">
    <children>
-      <LineChart fx:id="avalancheChartID" layoutX="91.0" layoutY="66.0" prefHeight="361.0" prefWidth="460.0" title="Лавинный эффект">
-        <xAxis>
-          <CategoryAxis side="BOTTOM" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis side="LEFT" />
-        </yAxis>
-      </LineChart>
       <Button layoutX="36.0" layoutY="14.0" mnemonicParsing="false" onAction="#onChooseFile" text="Выбор файла" />
       <TextField fx:id="inputBitNumberID" layoutX="204.0" layoutY="14.0" prefHeight="26.0" prefWidth="63.0" promptText="Введите номер бита для замены" />
       <TextField fx:id="inputBlockSizeID" layoutX="339.0" layoutY="14.0" prefHeight="26.0" prefWidth="73.0" promptText="Введите размер блока" />
@@ -25,5 +17,13 @@
       <Button layoutX="562.0" layoutY="445.0" mnemonicParsing="false" onAction="#onGoToMenu" text="В меню" />
       <Label fx:id="roundsLabel" layoutX="321.0" layoutY="411.0" text="Раунды" visible="false" />
       <Label fx:id="changesCountLabel" layoutX="-10.0" layoutY="227.0" rotate="-90.0" text="Количество изменений битов" visible="false" />
+      <LineChart fx:id="avalancheChartID" layoutX="62.0" layoutY="46.0" visible="false">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </LineChart>
    </children>
 </AnchorPane>

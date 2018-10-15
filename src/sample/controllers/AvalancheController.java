@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
 import javafx.stage.Stage;
 import sample.managers.AvalancheManager;
 
@@ -21,8 +22,8 @@ public class AvalancheController {
         this.primaryStage=primaryStage;
         primaryStage.setTitle("Исследование лавинного эффекта");
         avalancheManager = new AvalancheManager(root);
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
+        this.primaryStage.setScene(new Scene(root));
+        this.primaryStage.show();
     }
 
     public AvalancheController(){
@@ -31,8 +32,10 @@ public class AvalancheController {
 
     @FXML
     public void onBuildChart() {
-        avalancheManager.onBuildChart();
-        //primaryStage.show();
+        LineChart lc=avalancheManager.onBuildChart();
+        //primaryStage.close();
+
+
     }
 
     @FXML

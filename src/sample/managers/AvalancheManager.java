@@ -10,6 +10,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import sample.FeistelСipher;
 
 import static javafx.scene.chart.XYChart.*;
@@ -20,11 +21,17 @@ public class AvalancheManager {
     FeistelСipher feistelСipher;
 
     @FXML
-    LineChart avalancheChartID;
+    LineChart<String, Double> avalancheChartID;
     TextField inputBlockSizeID;
     TextField inputBitNumberID;
     Label changesCountLabel;
     Label roundsLabel;
+    AnchorPane anchorPaneID;
+
+    @FXML
+    NumberAxis x;
+    @FXML
+    NumberAxis y;
 
 
     public AvalancheManager(Parent root){
@@ -33,6 +40,7 @@ public class AvalancheManager {
     }
 
     private void init(){
+        anchorPaneID=(AnchorPane) root.lookup("#anchorPaneID");
         avalancheChartID=(LineChart) root.lookup("#avalancheChartID");
         inputBitNumberID=(TextField) root.lookup("#inputBitNumberID");
         inputBlockSizeID=(TextField) root.lookup("#inputBlockSizeID");
@@ -41,32 +49,27 @@ public class AvalancheManager {
     }
 
     @FXML
-    public void onBuildChart(){
-        NumberAxis x = new NumberAxis();
-        NumberAxis y = new NumberAxis();
+    public LineChart onBuildChart(){
+        x = new NumberAxis();
+        y = new NumberAxis();
 
-        avalancheChartID = new LineChart<Number, Number>(x,y);
-        avalancheChartID.setTitle("Series");
-        Series series1 = new Series();
-        Series series2 = new Series();
-        series2.setName("cos(x)");
-        series1.setName("sin(x)");
-        ObservableList<Data> datas = FXCollections.observableArrayList();
-        ObservableList<Data> datas2 = FXCollections.observableArrayList();
+        //avalancheChartID;
+        avalancheChartID.setTitle("Ssanina ssanaya");
+        //avalancheChartID.setScaleX(3);
+        //avalancheChartID.setScaleY(5);
+        XYChart.Series<String, Double> series  = new XYChart.Series<String, Double>();
+        //series.setName("sin(x)");
         for(int i=0; i<20; i++){
-            datas.add(new Data(i,Math.sin(i)));
-            datas2.add(new Data(i,Math.cos(i)));
+            series.getData().add(new XYChart.Data<String, Double>(""+i, (double)i*2));
         }
 
-        series1.setData(datas);
-        series2.setData(datas2);
-
-        avalancheChartID.getData().add(series1);
-        avalancheChartID.getData().add(series2);
-
+        //avalancheChartID.setData(datas);
+        avalancheChartID.getData().add(series);
         //changesCountLabel.setVisible(true);
         //roundsLabel.setVisible(true);
         avalancheChartID.setVisible(true);
+        return avalancheChartID;
+        //root.getChildrenUnmodifiable().addAll(avalancheChartID);
     }
 
 }
