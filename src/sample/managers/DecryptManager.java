@@ -104,7 +104,7 @@ public class DecryptManager {
 
         String[][] decryptedNumbersLR=new String[blocksLR.length][2];
         for (int i=0;i<decryptedNumbersLR.length;i++) {
-            decryptedNumbersLR[i]=feistelСipher.doFeist(blocksLR[i], subKeys, Integer.parseInt(funcTypeID.getText()),true);
+            decryptedNumbersLR[i]=feistelСipher.doFeist(blocksLR[i], subKeys, Integer.parseInt(funcTypeID.getText()),true, false);
         }
 
 

@@ -32,7 +32,7 @@ public class AvalancheController {
 
     @FXML
     public void onBuildChart() {
-        LineChart lc=avalancheManager.onBuildChart();
+        avalancheManager.onBuildChart();
         //primaryStage.close();
 
 
@@ -40,7 +40,7 @@ public class AvalancheController {
 
     @FXML
     public void onChooseFile(){
-
+        avalancheManager.onChooseFile();
     }
 
     @FXML

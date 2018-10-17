@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.stream.IntStream;
+
 
 public class FeistelСipher {
     private int rounds;
@@ -41,10 +43,16 @@ public class FeistelСipher {
         else return "None";
     }
 
-    public String[] doFeist(String[] a, int[][] subKeys, int funcType, boolean reverse) {
+    public String[] doFeist(String[] a, int[][] subKeys, int funcType, boolean reverse, boolean debug) {
         int[][] a_int=new int[2][16*blockSize/2];
         a_int[0]=binStrToIntArray(a[0]);
         a_int[1]=binStrToIntArray(a[1]);
+
+
+        String[] deb=new String[rounds];
+        /*if(debug==true) {
+            int[][] deb=new int[rounds][blockSize*16];
+        }*/
 
 
         String func_res;
@@ -71,6 +79,10 @@ public class FeistelСipher {
                 }
 
                 a_int[1] = Arrays.copyOf(t, t.length);
+
+                if(debug==true){
+                    deb[i]= intArrayToBinStr(a_int[0])+intArrayToBinStr(a_int[1]);
+                }
             }
 
             else // последний раунд
@@ -88,6 +100,9 @@ public class FeistelСipher {
                     //a_int[1][ii]=a_int[1][ii]^key[(i*32+ii)%key.length];
                     a_int[1][ii]=a_int[1][ii]^func_resI[ii];
                 }
+                if(debug==true){
+                    deb[i]= intArrayToBinStr(a_int[0])+intArrayToBinStr(a_int[1]);
+                }
             }
             round += reverse? -1: 1;
         }
@@ -96,6 +111,9 @@ public class FeistelСipher {
         resStr[0]=intArrayToBinStr(a_int[0]);
         resStr[1]=intArrayToBinStr(a_int[1]);
 
+        if (debug==true){
+            return deb;
+        }
         return resStr;
     }
 
@@ -347,93 +365,60 @@ public class FeistelСipher {
 
     }
 
+    public int[][] countChangedBits(String[] block,int[][] subKeys, int funcType){
+        int[][] count=new int[3][rounds];
+        Arrays.fill(count[0],0);
+        Arrays.fill(count[1],0);
+        Arrays.fill(count[2],0);
+        String[] blockCh=new String[2];
+        blockCh[0]=String.valueOf(block[0]);
+        char z=(block[1].charAt(0)=='0') ? '1' : '0';
+        blockCh[1]= z+ block[1].substring(1);
+        //String.valueOf(block[1]);
+        int[][] subKeysCh=new int[subKeys.length][subKeys[0].length];
+        for (int i=0;i<subKeysCh.length;i++) {
+            for (int j=0;j<subKeysCh[i].length;j++) {
+                subKeysCh[i][j] = subKeys[i][j];
+            }
+        }
+        System.out.println(subKeysCh[0][0]);
 
-    /*
-    public int countChangedBits(int position, String block){
-        int count=0;
-        //int round = 0;
-
-        StringBuilder tmp_str=new StringBuilder(block);
-        String[] unchanged=getLeftRightFromBlock(tmp_str.toString());
-
-        if (tmp_str.charAt(position-1)=='0'){
-            tmp_str.setCharAt(position-1,'1');
+        if(subKeysCh[0][subKeysCh[0].length-1]==0){
+            subKeysCh[0][subKeysCh[0].length-1]=1;
         }
         else {
-            tmp_str.setCharAt(position-1,'0');
+            subKeysCh[0][subKeysCh[0].length-1]=0;
         }
 
-        String[] changed=getLeftRightFromBlock(tmp_str.toString());
 
-        int[][] a_int=new int[2][16*blockSize/2];
-        a_int[0]=binStrToIntArray(unchanged[0]);
-        a_int[1]=binStrToIntArray(unchanged[0]);
+        // funcType1, keyType1, changed bit at block
+        //for (int i=0)
+        String[] unchF=doFeist(block,subKeys,funcType,true,true);
+        String[] uncFBlockChanged=doFeist(blockCh,subKeys,funcType,true, true);
+        String[] uncFKeyChanged=doFeist(block,subKeysCh,funcType,true, true);
+        String[] uncFKeyChangedBlockChanged=doFeist(blockCh,subKeysCh,funcType,true, true);
 
-        int[][] b_int=new int[2][16*blockSize/2];
-        b_int[0]=binStrToIntArray(changed[0]);
-        b_int[1]=binStrToIntArray(changed[0]);
 
-        String func_res, func_resB;
-        int round = 1;
-        int[] t;
-        int[] t1;
-        for (int i = 0; i < rounds; i++)
-        {
-
-            if (i < rounds-1) // если не последний раунд
-            {
-                t = Arrays.copyOf(a_int[0], a_int[0].length);
-                t1= Arrays.copyOf(b_int[0], b_int[0].length);
-                func_res=asBitString(func(asBitString(intArrayToBinStr(a_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
-                func_resB=asBitString(func(asBitString(intArrayToBinStr(b_int[0]),16*blockSize/2),subKeys[i],16*blockSize/2)),16*blockSize/2);
-                int [] func_resI=binStrToIntArray(func_res);
-                int [] func_resIB=binStrToIntArray(func_resB);
-
-                for (int ii=0;ii<a_int[0].length;ii++){
-                    a_int[0][ii]=a_int[1][ii]^func_resI[ii];
-                    b_int[0][ii]=b_int[1][ii]^func_resIB[ii];
-                    if (a_int[0][ii]!=b_int[0][ii]){
-                        count++;
-                    }
-                }
-                a_int[1] = Arrays.copyOf(t, t.length);
-                b_int[1] = Arrays.copyOf(t1, t1.length);
-
-                for (int ii=0;ii<a_int[1].length;ii++){
-                    if (a_int[1][ii]!=b_int[1][ii]){
-                        count++;
-                    }
-                }
-
+        for (int i=0;i<unchF.length;i++){
+            if (i>0){
+                count[0][i]=count[0][i-1];
+                count[1][i]=count[0][i-1];
+                count[2][i]=count[0][i-1];
             }
-
-            else // последний раунд
-            {
-
-                func_res=asBitString(func(asBitString(intArrayToBinStr(a_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
-                int [] func_resI=binStrToIntArray(func_res);
-
-                func_resB=asBitString(func(asBitString(intArrayToBinStr(b_int[0]),16*blockSize/2),asBitString(Integer.toString(round,2),16*blockSize/2)),16*blockSize/2);
-                int [] func_resIB=binStrToIntArray(func_resB);
-
-
-                for (int ii=0;ii<a_int[1].length;ii++){
-                    a_int[1][ii]=a_int[1][ii]^func_resI[ii];
-                    b_int[1][ii]=b_int[1][ii]^func_resI[ii];
-
-                    if (a_int[1][ii]!=b_int[1][ii]){
-                        count++;
-                    }
-
+            for (int j=0;j<unchF[i].length();j++){
+                if (uncFBlockChanged[i].charAt(j)!=unchF[i].charAt(j)){
+                    count[0][i]++;
+                }
+                if (uncFKeyChanged[i].charAt(j)!=unchF[i].charAt(j)){
+                    count[1][i]++;
+                }
+                if (uncFKeyChangedBlockChanged[i].charAt(j)!=unchF[i].charAt(j)){
+                    count[2][i]++;
                 }
             }
-
-            System.out.println("Раунд "+i+" Число изменившихся бит"+count);
-            round ++;
         }
-
         return count;
-    }*/
+    }
 
 
     public String deleteSymbol(String str, char symbol) {

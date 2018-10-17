@@ -129,7 +129,7 @@ public class EncryptManager {
         String[][] encryptedNumbersLR=new String[blocksLR.length][2];
         for (int i=0;i<encryptedNumbersLR.length;i++) {
             //System.out.println("blocksLR"+ blocksLR[i][1]);
-            encryptedNumbersLR[i]=feistelСipher.doFeist(blocksLR[i], subKeys, Integer.parseInt(funcTypeID.getText()),false);
+            encryptedNumbersLR[i]=feistelСipher.doFeist(blocksLR[i], subKeys, Integer.parseInt(funcTypeID.getText()),false,false);
         }
 
         System.out.println("зашифр");
