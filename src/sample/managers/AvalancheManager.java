@@ -21,7 +21,7 @@ public class AvalancheManager {
     FeistelСipher feistelСipher;
 
     @FXML
-    LineChart<String, Double> avalancheChartID;
+    LineChart<String, Double>  avalancheChartID;
     TextField inputBlockSizeID;
     TextField inputBitNumberID;
     Label changesCountLabel;

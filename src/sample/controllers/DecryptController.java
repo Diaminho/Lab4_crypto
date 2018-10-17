@@ -36,6 +36,12 @@ public class DecryptController {
         decryptManager.onChooseFile();
     }
 
+
+    @FXML
+    public void onChooseKeyFile(){
+        decryptManager.onChooseKeyFile();
+    }
+
     @FXML
     public void onDecryptButton(){
         decryptManager.onDecryptButton();

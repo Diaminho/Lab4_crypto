@@ -45,6 +45,19 @@ public class MainController {
         }
     }
 
+    @FXML
+    public void onGenerateKeyButton() {
+        primaryStage.close();
+        try {
+            new GenerateKeyController(primaryStage);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+
+
+
 
     @FXML
     public void onGoToAvalancheButton() {

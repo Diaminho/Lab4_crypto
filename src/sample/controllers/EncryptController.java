@@ -39,6 +39,11 @@ public class EncryptController {
     }
 
     @FXML
+    public void onChooseKeyFile(){
+        encryptManager.onChooseKeyFile();
+    }
+
+    @FXML
     public void onEncryptButton(){
         encryptManager.onEncryptButton();
     }

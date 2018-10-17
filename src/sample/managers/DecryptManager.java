@@ -7,7 +7,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import sample.FeistelСipher;
+import sample.Scrambler;
 import sample.controllers.MainController;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class DecryptManager {
     private static Parent root;
@@ -15,12 +21,17 @@ public class DecryptManager {
     FeistelСipher feistelСipher;
     String[] decrAStr;
     String fileName;
+    Scrambler scr;
+    private int key;
+    private int[] keyBin;
 
     @FXML
     TextArea encodedTextID;
     TextArea decodedTextID;
     TextField inputBlockSizeID;
     TextField inputRoundsID;
+    TextField subKeyTypeID;
+    TextField funcTypeID;
 
 
     public DecryptManager(Parent root){
@@ -33,6 +44,8 @@ public class DecryptManager {
         encodedTextID=(TextArea) root.lookup("#encodedTextID");
         inputRoundsID=(TextField) root.lookup("#inputRoundsID");
         inputBlockSizeID=(TextField) root.lookup("#inputBlockSizeID");
+        subKeyTypeID=(TextField) root.lookup("#subKeyTypeID");
+        funcTypeID=(TextField) root.lookup("#funcTypeID");
     }
 
     @FXML
@@ -49,19 +62,49 @@ public class DecryptManager {
     }
 
     @FXML
+    public void onChooseKeyFile(){
+        String fName=feistelСipher.getFile();
+        String key="";
+        try (BufferedReader br = new BufferedReader(new FileReader(fName))) {
+            //чтение построчно
+            key=br.readLine();
+        }
+        catch (IOException e){
+            System.out.println(e);
+        }
+        keyBin=new int[key.length()];
+        for (int i=0;i<keyBin.length;i++){
+            keyBin[i]=Integer.parseInt(key.charAt(i)+"");
+        }
+    }
+
+
+    @FXML
     public void onDecryptButton(){
+        String info=feistelСipher.getInfoFromFile(fileName);
         feistelСipher.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
         feistelСipher.setRounds(Integer.parseInt(inputRoundsID.getText()));
-        String info=feistelСipher.getInfoFromFile(fileName);
         String[] blockInfo=feistelСipher.getBlockInfoBin(info);
         String[][] blocksLR=new String[blockInfo.length][2];
         for (int i=0;i<blocksLR.length;i++){
             blocksLR[i]=feistelСipher.getLeftRightFromBlock(blockInfo[i]);
         }
 
+        int[][] subKeys;
+        if(Integer.parseInt(subKeyTypeID.getText())==1){
+            subKeys=feistelСipher.getSubKeyFirst(keyBin);
+        }
+        else if (Integer.parseInt(subKeyTypeID.getText())==2) {
+            subKeys=feistelСipher.getSubKeySecond(keyBin);
+        }
+        else {
+            subKeys=new int[1][1];
+            System.out.println("Введите правильный тип");
+        }
+
         String[][] decryptedNumbersLR=new String[blocksLR.length][2];
         for (int i=0;i<decryptedNumbersLR.length;i++) {
-            decryptedNumbersLR[i]=feistelСipher.doFeist(blocksLR[i], true);
+            decryptedNumbersLR[i]=feistelСipher.doFeist(blocksLR[i], subKeys, Integer.parseInt(funcTypeID.getText()),true);
         }
 
 
