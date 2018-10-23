@@ -1,30 +1,23 @@
 package sample.managers;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import sample.FeistelСipher;
+import sample.Gost;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-
-import static javafx.scene.chart.XYChart.*;
 
 public class AvalancheManager {
     private static Parent root;
     String fileName;
 
-    FeistelСipher feistelСipher;
+    Gost feistelСipher;
 
     @FXML
     LineChart<String, Double> avalancheChartID;
@@ -79,8 +72,8 @@ public class AvalancheManager {
     public void onBuildChart(){
         String info=feistelСipher.getInfoFromFile(fileName);
         System.out.println(info);
-        feistelСipher.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
-        feistelСipher.setRounds(Integer.parseInt(inputRoundsID.getText()));
+        //feistelСipher.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
+        //feistelСipher.setRounds(Integer.parseInt(inputRoundsID.getText()));
         String[] blockInfo=feistelСipher.getBlockInfoBin(info);
         String[][] blocksLR=new String[blockInfo.length][2];
         for (int i=0;i<blocksLR.length;i++){
@@ -107,9 +100,9 @@ public class AvalancheManager {
         int[][] count11=feistelСipher.countChangedBits(blocksLR[0],subKeys,1);
         int[][] count12=feistelСipher.countChangedBits(blocksLR[0],subKeys,2);
 
-
+        /*
         subKeys=feistelСipher.getSubKeySecond(keyBin);
-
+        */
         int[][] count21=feistelСipher.countChangedBits(blocksLR[0],subKeys,1);
         int[][] count22=feistelСipher.countChangedBits(blocksLR[0],subKeys,2);
 
@@ -307,11 +300,11 @@ public class AvalancheManager {
 
     @FXML
     public void onChooseFile(){
-        feistelСipher=new FeistelСipher();
+        feistelСipher=new Gost();
         fileName=feistelСipher.getFile();
-        //feistelСipher.setRounds(3);
-        //feistelСipher.setBlockSize(8);
-        //feistelСipher.test();
+        //gost.setRounds(3);
+        //gost.setBlockSize(8);
+        //gost.test();
         String info=feistelСipher.getInfoFromFile(fileName);
     }
 

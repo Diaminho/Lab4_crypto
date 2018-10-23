@@ -1,34 +1,45 @@
 package sample;
 
-import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import java.io.*;
-import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 
-public class FeistelСipher {
-    private int rounds;
-    private int blockSize;
+public class Gost {
+    private static int rounds=32;
+    private static int blockSize=4;
+    private int[][] s=new int[8][];
 
-    public FeistelСipher(){ }
+    void setS(){
+        s[0]=new int[] {4, 10, 9, 2, 13, 8, 0, 14, 6, 11, 1, 12, 7, 15, 5, 3};
+        s[1] =new int[] {14, 11, 4, 12, 6, 13, 15, 10, 2, 3, 8, 1, 0, 7, 5, 9};
+        s[2] =new int[] {5, 8, 1, 13, 10, 3, 4, 2, 14, 15, 12, 7, 6, 0, 9, 11};
+        s[3] =new int[] {7, 13, 10, 1, 0, 8, 9, 15, 14, 4, 6, 12, 11, 2, 5, 3};
+        s[4] =new int[] {6, 12, 7, 1, 5, 15, 13, 8, 4, 10, 9, 14, 0, 3, 11, 2};
+        s[5] =new int[] {4, 11, 10, 0, 7, 2, 1, 13, 3, 6, 8, 5, 9, 12, 15, 14};
+        s[6] =new int[] {13, 11, 4, 1, 3, 15, 5, 9, 0, 10, 14, 7, 6, 8, 2, 12};
+        s[7] =new int[] {1, 15, 13, 0, 5, 7, 10, 4, 9, 2, 3, 14, 6, 11, 8, 12};
+    }
+
+
+    public Gost(){ setS();}
 
     public int getBlockSize() {
         return blockSize;
     }
 
-    public void setBlockSize(int blockSize) {
+
+    /*public void setBlockSize(int blockSize) {
         this.blockSize = blockSize;
-    }
+    }*/
 
     public int getRounds() {
         return rounds;
     }
 
-    public void setRounds(int rounds) {
+    /*public void setRounds(int rounds) {
         this.rounds = rounds;
-    }
+    }*/
 
     public String getFile(){
         JFileChooser fileopen = new JFileChooser();
@@ -43,77 +54,116 @@ public class FeistelСipher {
         else return "None";
     }
 
-    public String[] doFeist(String[] a, int[][] subKeys, int funcType, boolean reverse, boolean debug) {
+
+    /*
+    public String fillText(String str){
+        while (str.length()%4!=0) {
+            str=str+'9';
+        }
+        return str;
+    }
+    */
+
+    public String[] doEncrypt(String[] a, int[][] subKeys, int funcType, boolean reverse, boolean debug) {
         int[][] a_int=new int[2][16*blockSize/2];
         a_int[0]=binStrToIntArray(a[0]);
         a_int[1]=binStrToIntArray(a[1]);
 
-
         String[] deb=new String[rounds];
-        /*if(debug==true) {
-            int[][] deb=new int[rounds][blockSize*16];
-        }*/
-
 
         String func_res;
         int round = reverse? rounds: 1;
         int[] t;
-        for (int i = 0; i < rounds; i++)
-        {
+        for (int i = 0; i < rounds; i++) {
 
-            if (i < rounds-1) // если не последний раунд
-            {
-                t = Arrays.copyOf(a_int[0], a_int[0].length);
-                if (funcType==1) {
-                    func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[0]), 16 * blockSize / 2), subKeys[round - 1]), 16 * blockSize / 2);
-                }
-                else {
-                    func_res = asBitString(funcTwo(asBitString(intArrayToBinStr(a_int[0]), 16 * blockSize / 2), subKeys[round - 1]), 16 * blockSize / 2);
-                }
+            //if (i < 24) // если не последний раунд
+            //{
+                func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[i%subKeys.length]), 16 * blockSize / 2);
+
+            //}
+            //else {
+            //    func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[subKeys.length-1-(i)%subKeys.length]), 16 * blockSize / 2);
+            //}
+                t = Arrays.copyOf(a_int[1], a_int[1].length);
                 int [] func_resI=binStrToIntArray(func_res);
                 //int[] func_resI=Arrays.copyOf(key,);
 
-                for (int ii=0;ii<a_int[0].length;ii++){
+                for (int ii=0;ii<a_int[1].length;ii++){
                     //a_int[0][ii]=a_int[1][ii]^key[(i*32+ii)%key.length];
-                    a_int[0][ii]=a_int[1][ii]^func_resI[ii];
+                    a_int[1][ii]=a_int[0][ii]^func_resI[ii];
                 }
 
-                a_int[1] = Arrays.copyOf(t, t.length);
+                a_int[0] = Arrays.copyOf(t, t.length);
 
                 if(debug==true){
                     deb[i]= intArrayToBinStr(a_int[0])+intArrayToBinStr(a_int[1]);
                 }
-            }
+            //}
 
+            /*
             else // последний раунд
             {
-
-                if (funcType==1) {
-                    func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[0]), 16 * blockSize / 2), subKeys[round - 1]), 16 * blockSize / 2);
-                }
-                else {
-                    func_res = asBitString(funcTwo(asBitString(intArrayToBinStr(a_int[0]), 16 * blockSize / 2), subKeys[round - 1]), 16 * blockSize / 2);
-                }
+                //KEY FROM 8 TO 1
+                t = Arrays.copyOf(a_int[0], a_int[0].length);
+                func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[0]), 16 * blockSize / 2), subKeys[round - 1]), 16 * blockSize / 2);
                 int [] func_resI=binStrToIntArray(func_res);
-
-                for (int ii=0;ii<a_int[1].length;ii++){
-                    //a_int[1][ii]=a_int[1][ii]^key[(i*32+ii)%key.length];
-                    a_int[1][ii]=a_int[1][ii]^func_resI[ii];
-                }
+                a_int[1]=Arrays.copyOf(t,t.length);
                 if(debug==true){
                     deb[i]= intArrayToBinStr(a_int[0])+intArrayToBinStr(a_int[1]);
                 }
-            }
-            round += reverse? -1: 1;
+            }*/
+            round += 1;
         }
 
         String[] resStr=new String[2];
-        resStr[0]=intArrayToBinStr(a_int[0]);
-        resStr[1]=intArrayToBinStr(a_int[1]);
+        resStr[0]=intArrayToBinStr(a_int[1]);
+        resStr[1]=intArrayToBinStr(a_int[0]);
 
         if (debug==true){
             return deb;
         }
+        return resStr;
+    }
+
+    public String[] doDecrypt(String[] a, int[][] subKeys) {
+        int[][] a_int=new int[2][16*blockSize/2];
+        a_int[0]=binStrToIntArray(a[0]);
+        a_int[1]=binStrToIntArray(a[1]);
+
+        String func_res;
+        int round = rounds;
+        int[] t;
+        for (int i = 0; i < rounds; i++) {
+
+            //if (i < 8) //
+            //{
+            //    func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[i%subKeys.length]), 16 * blockSize / 2);
+            //}
+            //else {
+                func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[subKeys.length-1-i%subKeys.length]), 16 * blockSize / 2);
+            //}
+
+            t = Arrays.copyOf(a_int[1], a_int[1].length);
+            func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[(round - 1)%subKeys.length]), 16 * blockSize / 2);
+            int [] func_resI=binStrToIntArray(func_res);
+            //int[] func_resI=Arrays.copyOf(key,);
+
+            for (int ii=0;ii<a_int[1].length;ii++){
+                //a_int[0][ii]=a_int[1][ii]^key[(i*32+ii)%key.length];
+                a_int[1][ii]=a_int[0][ii]^func_resI[ii];
+            }
+
+            a_int[0] = Arrays.copyOf(t, t.length);
+
+            //}
+
+            round +=  -1;
+        }
+
+        String[] resStr=new String[2];
+        resStr[0]=intArrayToBinStr(a_int[1]);
+        resStr[1]=intArrayToBinStr(a_int[0]);
+
         return resStr;
     }
 
@@ -147,7 +197,7 @@ public class FeistelСipher {
     }
 
     /*
-    public String[] doFeist(String[] a, boolean reverse)
+    public String[] doEncrypt(String[] a, boolean reverse)
     {
         int round = reverse? rounds: 1;
         String[] res=new String[2];
@@ -174,73 +224,54 @@ public class FeistelСipher {
     }
     */
 
-    public String func(String b, int[] subKey) {
-        StringBuilder resStr=new StringBuilder();
-        for (int i=0;i<subKey.length;i++){
-            resStr.insert(i,subKey[i]);
+    public int[] getSBlockFromStr(String str){
+        int[] res=new int[8];
+        //System.out.println(str.length());
+        for (int i=0;i<res.length;i++){
+            res[i]=Integer.parseInt(str.substring(i*4,(i+1)*4),2);
+            res[i]=s[i][res[i]];
         }
-        System.out.println(resStr);
-        return resStr.toString();
+        return res;
     }
 
-    public String funcTwo(String b, int[] subKey) {
-        int[] poly=new int[16];
-        Arrays.fill(poly,0);
-        poly[14]=1;
-        poly[15]=1;
-        Scrambler scr=new Scrambler(1,poly,32);
-        int[] key=scr.generateKey();
-        int[] tmp_b=binStrToIntArray(b);
-        System.out.println("FUNC TWO "+tmp_b.length);
-        //int[] tmp_k=binStrToIntArray(k);
-        int[] res=new int[tmp_b.length];
-        StringBuilder resStr=new StringBuilder();
-        for (int i=0;i<res.length;i++){
-            res[i]=tmp_b[i]^key[i%key.length];
-            res[i]=subKey[i%subKey.length]^res[i];
-            resStr.insert(i,res[i]);
+    public String getStrFromBlockInt(int[] Sblock){
+        StringBuffer res=new StringBuffer();
+        for (int i=0;i<Sblock.length;i++){
+            res.append(asBitString(Integer.toBinaryString(Sblock[i]),4));
         }
+        return res.toString();
+    }
 
-        //System.out.println(resStr);
-        return resStr.toString();
+
+    public String func(String b, int[] subKey) {
+        String subKeyStr=intArrayToBinStr(subKey);
+        // Ri-1+SubKey i mod 2^32)
+        Long Ri=Long.parseLong(b,2);
+        Long subKeyL=Long.parseLong(subKeyStr,2);
+        Long RiSubKey=(Ri+subKeyL)%(long)Math.pow(2,32);
+        //
+        int[] bInt=getSBlockFromStr(asBitString(Long.toBinaryString(RiSubKey),32));
+        String res=getStrFromBlockInt(bInt);
+        res=getShift(res,11);
+        return res;
+    }
+
+    public String getShift(String str,int shift){
+        StringBuffer res=new StringBuffer();
+        res.append(str.substring(shift));
+        res.append(str.substring(0,shift));
+        return res.toString();
     }
 
     public int[][] getSubKeyFirst(int[] key) {
-        int[][] subKey=new int[rounds][32];
+        int[][] subKey=new int[8][32];
         for (int i=0;i<subKey.length;i++){
             for (int j=0;j<subKey[i].length;j++){
-                subKey[i][j]=key[(i*subKey[i].length+j)%key.length];
+                subKey[i][j]=key[i*subKey[i].length+j];
             }
         }
         return subKey;
     }
-
-    public int[][] getSubKeySecond(int[] key) {
-        int[] poly=new int[8];
-        Arrays.fill(poly,0);
-        poly[6]=1;
-        poly[7]=1;
-        StringBuffer keyStr=new StringBuffer();
-        for (int i=0;i<key.length;i++){
-            keyStr.append(key[i]);
-        }
-
-        int[] initValue=new int[rounds];
-        for (int i=0;i<rounds;i++) {
-            initValue[i]=Integer.parseInt(keyStr.substring(i, 8),2);
-        }
-        Scrambler scr=new Scrambler(0,poly,32);
-        int[][] subKey=new int[rounds][32];
-        for (int i=0;i<subKey.length;i++){
-            scr.setInitValue(initValue[i]);
-            int[] keyTmp=scr.generateKey();
-            for (int j=0;j<subKey[i].length;j++){
-                subKey[i][j]=keyTmp[j];
-            }
-        }
-        return subKey;
-    }
-
 
 
 /*
@@ -248,9 +279,9 @@ public class FeistelСipher {
         Long[] a = new Long[2];
         a[0] = Long.valueOf(10000000);
         a[1] = Long.valueOf(200);
-        doFeist(a, false);
+        doEncrypt(a, false);
         System.out.println("a0: "+a[0]+" a1: "+a[1]);
-        doFeist(a, true);
+        doEncrypt(a, true);
         System.out.println("a0: "+a[0]+" a1: "+a[1]);
     }*/
 
@@ -393,10 +424,10 @@ public class FeistelСipher {
 
         // funcType1, keyType1, changed bit at block
         //for (int i=0)
-        String[] unchF=doFeist(block,subKeys,funcType,true,true);
-        String[] uncFBlockChanged=doFeist(blockCh,subKeys,funcType,true, true);
-        String[] uncFKeyChanged=doFeist(block,subKeysCh,funcType,true, true);
-        String[] uncFKeyChangedBlockChanged=doFeist(blockCh,subKeysCh,funcType,true, true);
+        String[] unchF= doEncrypt(block,subKeys,funcType,true,true);
+        String[] uncFBlockChanged= doEncrypt(blockCh,subKeys,funcType,true, true);
+        String[] uncFKeyChanged= doEncrypt(block,subKeysCh,funcType,true, true);
+        String[] uncFKeyChangedBlockChanged= doEncrypt(blockCh,subKeysCh,funcType,true, true);
 
 
         for (int i=0;i<unchF.length;i++){

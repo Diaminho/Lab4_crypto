@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -17,10 +16,6 @@
   <rowConstraints>
     <RowConstraints maxHeight="59.0" minHeight="4.0" prefHeight="51.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="59.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="48.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="76.0" minHeight="17.0" prefHeight="50.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="76.0" minHeight="17.0" prefHeight="50.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="76.0" minHeight="17.0" prefHeight="50.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="252.0" minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="169.0" minHeight="0.0" prefHeight="100.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="182.0" minHeight="10.0" prefHeight="51.0" vgrow="SOMETIMES" />
@@ -28,30 +23,22 @@
    <children>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Выберите файл для шифрования" />
       <Button fx:id="chooseFileButton" mnemonicParsing="false" onAction="#onChooseFile" prefHeight="26.0" prefWidth="167.0" text="Выбрать файл" GridPane.columnIndex="1" />
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Исходный текст" GridPane.rowIndex="6" />
-      <TextArea fx:id="originTextID" prefHeight="116.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Исходный текст" GridPane.rowIndex="2" />
+      <TextArea fx:id="originTextID" prefHeight="116.0" prefWidth="184.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
          </GridPane.margin>
       </TextArea>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Зашифрованный текст" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="7" GridPane.valignment="CENTER" />
-      <TextArea fx:id="encryptedTextID" prefHeight="139.0" prefWidth="264.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Зашифрованный текст" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+      <TextArea fx:id="encryptedTextID" prefHeight="139.0" prefWidth="264.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
          </GridPane.margin>
       </TextArea>
-      <Button fx:id="saveEncrTextButton" alignment="CENTER" mnemonicParsing="false" onAction="#onSaveEncrTextButton" prefHeight="26.0" prefWidth="144.0" text="Сохранить в файл" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="8" GridPane.valignment="CENTER" GridPane.vgrow="NEVER" />
-      <Button fx:id="menuButton" mnemonicParsing="false" onAction="#onMenuButton" text="В главное меню" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-      <TextField fx:id="inputRoundCountID" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="47.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Введите количество раундов" GridPane.rowIndex="2" />
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Введите размер блока (в символах)" wrappingWidth="246.19384765625" GridPane.rowIndex="3" />
-      <TextField fx:id="inputBlockSizeID" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="47.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <Button mnemonicParsing="false" onAction="#onEncryptButton" prefHeight="14.0" prefWidth="113.0" text="Зашифровать" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
+      <Button fx:id="saveEncrTextButton" alignment="CENTER" mnemonicParsing="false" onAction="#onSaveEncrTextButton" prefHeight="26.0" prefWidth="144.0" text="Сохранить в файл" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="4" GridPane.valignment="CENTER" GridPane.vgrow="NEVER" />
+      <Button fx:id="menuButton" mnemonicParsing="false" onAction="#onMenuButton" text="В главное меню" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Button mnemonicParsing="false" onAction="#onEncryptButton" prefHeight="14.0" prefWidth="113.0" text="Зашифровать" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Выберите файл с ключом" GridPane.rowIndex="1" />
       <Button mnemonicParsing="false" onAction="#onChooseKeyFile" text="Выбрать файл с ключом" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Введите тип получения подключей (1 или 2)" GridPane.rowIndex="4" />
-      <TextField fx:id="subKeyTypeID" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="47.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Выберите тип функции" GridPane.rowIndex="5" />
-      <TextField fx:id="funcTypeID" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="47.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
    </children>
 </GridPane>
