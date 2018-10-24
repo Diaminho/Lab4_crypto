@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import sample.Gost;
 import sample.Scrambler;
 
@@ -16,7 +15,7 @@ public class EncryptManager {
     private static Parent root;
     Gost gost;
     Scrambler scr;
-    String[] ecnrString;
+    String[] encString;
     private String fileName;
     private int key;
     private int[] keyBin;
@@ -82,7 +81,7 @@ public class EncryptManager {
     }
 
     public void saveInfo(){
-        Gost.saveInfoToFile(fileName,ecnrString);
+        Gost.saveInfoToFile(fileName, encString);
     }
 
 
@@ -92,6 +91,7 @@ public class EncryptManager {
         String info= gost.getInfoFromFile(fileName);
         //info=gost.fillText(info);
         System.out.println(info);
+
         //originTextID.setText(info);
         //gost.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
         //gost.setRounds(Integer.parseInt(inputRoundCountID.getText()));
@@ -121,17 +121,18 @@ public class EncryptManager {
         String[] encrBinStr=new String[encryptedNumbersLR.length];
         for (int i=0;i<encryptedNumbersLR.length;i++) {
             encrBinStr[i]= gost.asBitString(encryptedNumbersLR[i][0],16* gost.getBlockSize()/2)+ gost.asBitString(encryptedNumbersLR[i][1],16* gost.getBlockSize()/2);
-            //System.out.println(i+" len "+encrBinStr[i].length());
+            //System.out.println(i+" len "+encrBinStr[i]);
         }
 
-        ecnrString=new String[encrBinStr.length];
+        encString =new String[encrBinStr.length];
         String encrText="";
-        for (int i=0;i<ecnrString.length;i++) {
-            ecnrString[i]= gost.getStringFromBinary(encrBinStr[i]);
-            encrText+=ecnrString[i];
-            //System.out.print(encStr[i]);
+        for (int i = 0; i< encString.length; i++) {
+            encString[i]= gost.getStringFromBinary(encrBinStr[i]);
+            encrText+= encString[i];
+            //System.out.print(encString[i]);
         }
 
+        //System.out.println(encrText);
         encryptedTextID.setText(encrText);
 
     }

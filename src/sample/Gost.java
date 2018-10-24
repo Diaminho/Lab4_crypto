@@ -54,16 +54,6 @@ public class Gost {
         else return "None";
     }
 
-
-    /*
-    public String fillText(String str){
-        while (str.length()%4!=0) {
-            str=str+'9';
-        }
-        return str;
-    }
-    */
-
     public String[] doEncrypt(String[] a, int[][] subKeys, int funcType, boolean reverse, boolean debug) {
         int[][] a_int=new int[2][16*blockSize/2];
         a_int[0]=binStrToIntArray(a[0]);
@@ -76,75 +66,15 @@ public class Gost {
         int[] t;
         for (int i = 0; i < rounds; i++) {
 
-            //if (i < 24) // если не последний раунд
-            //{
-                func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[i%subKeys.length]), 16 * blockSize / 2);
-
-            //}
-            //else {
-            //    func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[subKeys.length-1-(i)%subKeys.length]), 16 * blockSize / 2);
-            //}
-                t = Arrays.copyOf(a_int[1], a_int[1].length);
-                int [] func_resI=binStrToIntArray(func_res);
-                //int[] func_resI=Arrays.copyOf(key,);
-
-                for (int ii=0;ii<a_int[1].length;ii++){
-                    //a_int[0][ii]=a_int[1][ii]^key[(i*32+ii)%key.length];
-                    a_int[1][ii]=a_int[0][ii]^func_resI[ii];
-                }
-
-                a_int[0] = Arrays.copyOf(t, t.length);
-
-                if(debug==true){
-                    deb[i]= intArrayToBinStr(a_int[0])+intArrayToBinStr(a_int[1]);
-                }
-            //}
-
-            /*
-            else // последний раунд
+            if (round < 25) // если не последний раунд
             {
-                //KEY FROM 8 TO 1
-                t = Arrays.copyOf(a_int[0], a_int[0].length);
-                func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[0]), 16 * blockSize / 2), subKeys[round - 1]), 16 * blockSize / 2);
-                int [] func_resI=binStrToIntArray(func_res);
-                a_int[1]=Arrays.copyOf(t,t.length);
-                if(debug==true){
-                    deb[i]= intArrayToBinStr(a_int[0])+intArrayToBinStr(a_int[1]);
-                }
-            }*/
-            round += 1;
-        }
+                func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[(round-1)%subKeys.length]), 16 * blockSize / 2);
 
-        String[] resStr=new String[2];
-        resStr[0]=intArrayToBinStr(a_int[1]);
-        resStr[1]=intArrayToBinStr(a_int[0]);
-
-        if (debug==true){
-            return deb;
-        }
-        return resStr;
-    }
-
-    public String[] doDecrypt(String[] a, int[][] subKeys) {
-        int[][] a_int=new int[2][16*blockSize/2];
-        a_int[0]=binStrToIntArray(a[0]);
-        a_int[1]=binStrToIntArray(a[1]);
-
-        String func_res;
-        int round = rounds;
-        int[] t;
-        for (int i = 0; i < rounds; i++) {
-
-            //if (i < 8) //
-            //{
-            //    func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[i%subKeys.length]), 16 * blockSize / 2);
-            //}
-            //else {
-                func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[subKeys.length-1-i%subKeys.length]), 16 * blockSize / 2);
-            //}
-
+            }
+            else {
+                func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[subKeys.length-1-(round)%subKeys.length]), 16 * blockSize / 2);
+            }
             t = Arrays.copyOf(a_int[1], a_int[1].length);
-            func_res = asBitString(func(asBitString(intArrayToBinStr(a_int[1]), 16 * blockSize / 2), subKeys[(round - 1)%subKeys.length]), 16 * blockSize / 2);
             int [] func_resI=binStrToIntArray(func_res);
             //int[] func_resI=Arrays.copyOf(key,);
 
@@ -155,15 +85,20 @@ public class Gost {
 
             a_int[0] = Arrays.copyOf(t, t.length);
 
-            //}
+            if(debug==true){
+                deb[i]= intArrayToBinStr(a_int[0])+intArrayToBinStr(a_int[1]);
+            }
 
-            round +=  -1;
+            round += reverse ? -1: 1;
         }
 
         String[] resStr=new String[2];
         resStr[0]=intArrayToBinStr(a_int[1]);
         resStr[1]=intArrayToBinStr(a_int[0]);
 
+        if (debug==true){
+            return deb;
+        }
         return resStr;
     }
 
@@ -196,33 +131,6 @@ public class Gost {
         return res.toString();
     }
 
-    /*
-    public String[] doEncrypt(String[] a, boolean reverse)
-    {
-        int round = reverse? rounds: 1;
-        String[] res=new String[2];
-        res[0] = a[0];
-        res[1] = a[1];
-        for (int i = 0; i < rounds; i++)
-        {
-            if (i < rounds-1) // если не последний раунд
-            {
-                String t = res[0];
-                res[0]=Long.toBinaryString(Long.parseLong(res[1],2) ^ func(Long.parseLong(res[0],2), round));
-                res[0]=asBitString(res[0],16*blockSize/2);
-                res[1] = t;
-                res[1]=asBitString(res[1],16*blockSize/2);
-            }
-            else // последний раунд
-            {
-                res[1] = Long.toBinaryString(Long.parseLong(res[1],2) ^ func(Long.parseLong(res[0],2), round));
-                res[1]=asBitString(res[1],16*blockSize/2);
-            }
-            round += reverse? -1: 1;
-        }
-        return res;
-    }
-    */
 
     public int[] getSBlockFromStr(String str){
         int[] res=new int[8];
@@ -273,26 +181,13 @@ public class Gost {
         return subKey;
     }
 
-
-/*
-    public void test() {
-        Long[] a = new Long[2];
-        a[0] = Long.valueOf(10000000);
-        a[1] = Long.valueOf(200);
-        doEncrypt(a, false);
-        System.out.println("a0: "+a[0]+" a1: "+a[1]);
-        doEncrypt(a, true);
-        System.out.println("a0: "+a[0]+" a1: "+a[1]);
-    }*/
-
-
     public String getInfoFromFile(String filePath){
         String tmpStr;
         String infoString="";
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             //чтение построчно
             while ((tmpStr = br.readLine()) != null) {
-                infoString += tmpStr+"\n";
+                infoString += tmpStr+'\n';
             }
             //System.out.println("Исходный текст: "+infoString);
             return infoString;

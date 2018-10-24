@@ -72,8 +72,8 @@ public class AvalancheManager {
     public void onBuildChart(){
         String info=feistelСipher.getInfoFromFile(fileName);
         System.out.println(info);
-        //feistelСipher.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
-        //feistelСipher.setRounds(Integer.parseInt(inputRoundsID.getText()));
+        //gost.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
+        //gost.setRounds(Integer.parseInt(inputRoundsID.getText()));
         String[] blockInfo=feistelСipher.getBlockInfoBin(info);
         String[][] blocksLR=new String[blockInfo.length][2];
         for (int i=0;i<blocksLR.length;i++){
@@ -101,7 +101,7 @@ public class AvalancheManager {
         int[][] count12=feistelСipher.countChangedBits(blocksLR[0],subKeys,2);
 
         /*
-        subKeys=feistelСipher.getSubKeySecond(keyBin);
+        subKeys=gost.getSubKeySecond(keyBin);
         */
         int[][] count21=feistelСipher.countChangedBits(blocksLR[0],subKeys,1);
         int[][] count22=feistelСipher.countChangedBits(blocksLR[0],subKeys,2);

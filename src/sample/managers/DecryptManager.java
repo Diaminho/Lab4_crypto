@@ -3,7 +3,6 @@ package sample.managers;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import sample.Gost;
 import sample.Scrambler;
 
@@ -14,7 +13,7 @@ import java.io.IOException;
 public class DecryptManager {
     private static Parent root;
     
-    Gost feistelСipher;
+    Gost gost;
     String[] decrAStr;
     String fileName;
     Scrambler scr;
@@ -37,12 +36,12 @@ public class DecryptManager {
 
     @FXML
     public void onChooseFile(){
-        feistelСipher=new Gost();
-        fileName=feistelСipher.getFile();
+        gost =new Gost();
+        fileName= gost.getFile();
         //gost.setRounds(3);
         //gost.setBlockSize(8);
         //gost.test();
-        String info=feistelСipher.getInfoFromFile(fileName);
+        String info= gost.getInfoFromFile(fileName);
         encodedTextID.setText(info);
         //System.out.println("info "+info);
 
@@ -50,7 +49,7 @@ public class DecryptManager {
 
     @FXML
     public void onChooseKeyFile(){
-        String fName=feistelСipher.getFile();
+        String fName= gost.getFile();
         String key="";
         try (BufferedReader br = new BufferedReader(new FileReader(fName))) {
             //чтение построчно
@@ -68,38 +67,39 @@ public class DecryptManager {
 
     @FXML
     public void onDecryptButton(){
-        String info=feistelСipher.getInfoFromFile(fileName);
-        //feistelСipher.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
-        //feistelСipher.setRounds(Integer.parseInt(inputRoundsID.getText()));
-        String[] blockInfo=feistelСipher.getBlockInfoBin(info);
+        String info= gost.getInfoFromFile(fileName);
+        //gost.setBlockSize(Integer.parseInt(inputBlockSizeID.getText()));
+        //gost.setRounds(Integer.parseInt(inputRoundsID.getText()));
+        String[] blockInfo= gost.getBlockInfoBin(info);
         String[][] blocksLR=new String[blockInfo.length][2];
         for (int i=0;i<blocksLR.length;i++){
-            blocksLR[i]=feistelСipher.getLeftRightFromBlock(blockInfo[i]);
+            blocksLR[i]= gost.getLeftRightFromBlock(blockInfo[i]);
         }
 
         int[][] subKeys;
-        subKeys=feistelСipher.getSubKeyFirst(keyBin);
+        subKeys= gost.getSubKeyFirst(keyBin);
 
         String[][] decryptedNumbersLR=new String[blocksLR.length][2];
         for (int i=0;i<decryptedNumbersLR.length;i++) {
-            decryptedNumbersLR[i]=feistelСipher.doDecrypt(blocksLR[i], subKeys);
+            decryptedNumbersLR[i]= gost.doEncrypt(blocksLR[i], subKeys,1,true,false);
         }
 
 
         String[] decrBinStr=new String[decryptedNumbersLR.length];
         for (int i=0;i<decryptedNumbersLR.length;i++) {
-            decrBinStr[i]=feistelСipher.asBitString(decryptedNumbersLR[i][0],16*feistelСipher.getBlockSize()/2)+feistelСipher.asBitString(decryptedNumbersLR[i][1],16*feistelСipher.getBlockSize()/2);
+            decrBinStr[i]= gost.asBitString(decryptedNumbersLR[i][0],16* gost.getBlockSize()/2)+ gost.asBitString(decryptedNumbersLR[i][1],16* gost.getBlockSize()/2);
             //System.out.println(decrBinStr[i]);
         }
 
         decrAStr=new String[decrBinStr.length];
         String decrStr="";
         for (int i=0;i<decrAStr.length;i++) {
-            decrAStr[i]=feistelСipher.getStringFromBinary(decrBinStr[i]);
+            decrAStr[i]= gost.getStringFromBinary(decrBinStr[i]);
             decrStr+=decrAStr[i];
             //System.out.print(encStr[i]);
         }
 
+        System.out.print(decrStr);
         decodedTextID.setText(decrStr);
     }
 
