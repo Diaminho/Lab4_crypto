@@ -34,8 +34,12 @@ public class AvalancheController {
     public void onBuildChart() {
         avalancheManager.onBuildChart();
         //primaryStage.close();
+    }
 
-
+    @FXML
+    public void onChooseKeyFile() {
+        avalancheManager.onChooseKeyFile();
+        //primaryStage.close();
     }
 
     @FXML

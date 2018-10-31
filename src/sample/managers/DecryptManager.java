@@ -81,7 +81,7 @@ public class DecryptManager {
 
         String[][] decryptedNumbersLR=new String[blocksLR.length][2];
         for (int i=0;i<decryptedNumbersLR.length;i++) {
-            decryptedNumbersLR[i]= gost.doEncrypt(blocksLR[i], subKeys,1,true,false);
+            decryptedNumbersLR[i]= gost.doEncrypt(blocksLR[i], subKeys,true,false);
         }
 
 

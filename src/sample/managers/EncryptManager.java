@@ -101,16 +101,52 @@ public class EncryptManager {
         String[][] blocksLR=new String[blockInfo.length][2];
         for (int i=0;i<blocksLR.length;i++){
             blocksLR[i]= gost.getLeftRightFromBlock(blockInfo[i]);
-
         }
 
         int[][] subKeys;
         subKeys= gost.getSubKeyFirst(keyBin);
 
+        //AAA
+        String subK=gost.intArrayToBinStr(subKeys[0]);
+        String x=gost.getXi(blocksLR[0],0);
+        int[][] a=gost.genA(blocksLR,subKeys);
+        System.out.println("AAAA");
+        for (int i=0;i<a.length;i++) {
+            for (int j = 0; j < a[i].length; j++) {
+                System.out.print(a[i][j]+" ");
+            }
+            System.out.println();
+        }
+
+        ///BBB
+        int[][] b=gost.genB(blocksLR,subKeys);
+        System.out.println("BBBB");
+        for (int i=0;i<b.length;i++) {
+            for (int j = 0; j < b[i].length; j++) {
+                System.out.print(b[i][j]+" ");
+            }
+            System.out.println();
+        }
+
+        /////D1
+        double d1=gost.getD1(b,blocksLR.length);
+        System.out.println("d1: "+d1);
+        ////D2
+        double d2=gost.getD2(a);
+        System.out.println("d2: "+d2);
+        ////D3
+        double d3=gost.getD3(b,blocksLR.length);
+        System.out.println("d3: "+d3);
+        ////D4
+        double d4=gost.getD4(b,blocksLR.length);
+        System.out.println("d4: "+d4);
+
+        ////
+
         String[][] encryptedNumbersLR=new String[blocksLR.length][2];
         for (int i=0;i<encryptedNumbersLR.length;i++) {
             //System.out.println("blocksLR"+ blocksLR[i][1]);
-            encryptedNumbersLR[i]= gost.doEncrypt(blocksLR[i], subKeys, 1,false,false);
+            encryptedNumbersLR[i]= gost.doEncrypt(blocksLR[i], subKeys, false,false);
         }
 
         System.out.println("зашифр");

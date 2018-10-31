@@ -5,32 +5,26 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.AvalancheController">
+<GridPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="218.0" prefWidth="724.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.AvalancheController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="200.0" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="200.0" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="-Infinity" prefWidth="200.0" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="-Infinity" prefWidth="200.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="200.0" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="-Infinity" minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="-Infinity" minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="1.7976931348623157E308" minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
       <Button mnemonicParsing="false" onAction="#onChooseFile" text="Выбор файла" GridPane.halignment="CENTER" />
-      <TextField fx:id="inputRoundsID" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="26.0" prefWidth="47.0" promptText="Введите число раундов" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-      <TextField fx:id="inputBlockSizeID" maxWidth="-Infinity" prefHeight="26.0" prefWidth="47.0" promptText="Введите размер блока" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-      <Button mnemonicParsing="false" onAction="#onBuildChart" text="Построить график" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-      <Button mnemonicParsing="false" onAction="#onGoToMenu" text="В меню" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Button mnemonicParsing="false" onAction="#onBuildChart" text="Построить график" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+      <Button mnemonicParsing="false" onAction="#onGoToMenu" text="В меню" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
       <Label fx:id="roundsLabel" text="Раунды" visible="false" />
       <Label fx:id="changesCountLabel" text="Количество изменений битов" visible="false" />
       <LineChart fx:id="avalancheChartID" visible="false" GridPane.rowIndex="2">
@@ -57,79 +51,8 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </LineChart>
-      <LineChart fx:id="avalancheChartID3" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="2">
-        <xAxis>
-          <CategoryAxis side="BOTTOM" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis side="LEFT" />
-        </yAxis>
-      </LineChart>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Раунды" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Размер блока" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
-      <LineChart fx:id="avalancheChartID4" visible="false" GridPane.rowIndex="3">
-        <xAxis>
-          <CategoryAxis side="BOTTOM" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis side="LEFT" />
-        </yAxis>
-      </LineChart>
-      <LineChart fx:id="avalancheChartID5" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3">
-         <xAxis>
-            <CategoryAxis side="BOTTOM" />
-         </xAxis>
-         <yAxis>
-            <NumberAxis side="LEFT" />
-         </yAxis>
-      </LineChart>
-      <LineChart fx:id="avalancheChartID6" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="3">
-         <xAxis>
-            <CategoryAxis side="BOTTOM" />
-         </xAxis>
-         <yAxis>
-            <NumberAxis side="LEFT" />
-         </yAxis>
-      </LineChart>
-      <LineChart fx:id="avalancheChartID7" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="3">
-         <xAxis>
-            <CategoryAxis side="BOTTOM" />
-         </xAxis>
-         <yAxis>
-            <NumberAxis side="LEFT" />
-         </yAxis>
-      </LineChart>
-      <LineChart fx:id="avalancheChartID8" visible="false" GridPane.rowIndex="4">
-        <xAxis>
-          <CategoryAxis side="BOTTOM" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis side="LEFT" />
-        </yAxis>
-      </LineChart>
-      <LineChart fx:id="avalancheChartID9" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4">
-        <xAxis>
-          <CategoryAxis side="BOTTOM" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis side="LEFT" />
-        </yAxis>
-      </LineChart>
-      <LineChart fx:id="avalancheChartID10" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="4">
-        <xAxis>
-          <CategoryAxis side="BOTTOM" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis side="LEFT" />
-        </yAxis>
-      </LineChart>
-      <LineChart fx:id="avalancheChartID11" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="4">
-        <xAxis>
-          <CategoryAxis side="BOTTOM" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis side="LEFT" />
-        </yAxis>
-      </LineChart>
+      <Button mnemonicParsing="false" onAction="#onChooseKeyFile" text="Выбрать ключ" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+      <Text fx:id="textID" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+      <Text fx:id="keyID" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
    </children>
 </GridPane>

@@ -2,6 +2,7 @@ package sample;
 
 import javax.swing.*;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 
@@ -54,7 +55,7 @@ public class Gost {
         else return "None";
     }
 
-    public String[] doEncrypt(String[] a, int[][] subKeys, int funcType, boolean reverse, boolean debug) {
+    public String[] doEncrypt(String[] a, int[][] subKeys, boolean reverse, boolean debug) {
         int[][] a_int=new int[2][16*blockSize/2];
         a_int[0]=binStrToIntArray(a[0]);
         a_int[1]=binStrToIntArray(a[1]);
@@ -150,7 +151,6 @@ public class Gost {
         return res.toString();
     }
 
-
     public String func(String b, int[] subKey) {
         String subKeyStr=intArrayToBinStr(subKey);
         // Ri-1+SubKey i mod 2^32)
@@ -164,10 +164,20 @@ public class Gost {
         return res;
     }
 
+    /*
+    public String func(String b, int[] subKey) {
+        StringBuilder resStr=new StringBuilder();
+        for (int i=0;i<subKey.length;i++){
+            resStr.insert(i,subKey[i]);
+        }
+        System.out.println(resStr);
+        return resStr.toString();
+    }*/
+
     public String getShift(String str,int shift){
-        StringBuffer res=new StringBuffer();
-        res.append(str.substring(shift));
-        res.append(str.substring(0,shift));
+        StringBuffer res = new StringBuffer();
+        res.append(str.substring(shift,str.length()));
+        res.append(str.substring(0, shift));
         return res.toString();
     }
 
@@ -242,7 +252,7 @@ public class Gost {
             for (int j=0;j<blockSize;j++) {
                 //System.out.println(blockInfoBin[i].length());
                 if(j>=blockInfo[i].length()){
-                    blockInfoBin[i]+="1111111111111111";
+                    blockInfoBin[i]+="0000000011111111";
                 }
                 else {
                     blockInfoBin[i]+= asBitString(Integer.toBinaryString((int) blockInfo[i].charAt(j)), 16);
@@ -291,7 +301,157 @@ public class Gost {
 
     }
 
-    public int[][] countChangedBits(String[] block,int[][] subKeys, int funcType){
+
+    public String getXi(String[] block, int position){
+        StringBuffer blockCh=new StringBuffer();
+        blockCh.append(block[0]);
+        if (blockCh.charAt(position)=='0') {
+            blockCh.setCharAt(position,'1');
+        } else {
+            blockCh.setCharAt(position, '0');
+        }
+        return blockCh.toString();
+    }
+
+    public String getYi(String xi,int[] subKey){
+        String yi=func(xi,subKey);
+        return yi;
+    }
+
+
+    public int[][] genA(String[][] x, int[][] keys) {
+
+        int[][] matrixA=new int[x[0][0].length()][x[0][0].length()];
+        String[][] xi=new String[x.length][x[0][0].length()];
+        String[][] yi=new String[x.length][x[0][0].length()];
+        String[][] y=new String[x.length][x[0][0].length()];
+        for (int i=0;i<x.length;i++){
+            for (int j=0;j<x[i][0].length();j++){
+                xi[i][j]=getXi(x[i],j);
+                yi[i][j]=getYi(xi[i][j],keys[i%keys.length]);
+                y[i][j]=func(x[i][0],keys[i%keys.length]);
+                //System.out.println(y[i][j]+" "+yi[i][j]);
+            }
+        }
+
+        int sum=0;
+        for (int i=0;i<matrixA.length;i++){
+            for (int j=0;j<matrixA[i].length;j++){
+                sum=0;
+                for (int k=0;k<x.length;k++){
+                    //System.out.println(yi[k][j]+" "+y[k][j]);
+                    if (yi[k][i].charAt(j)!= y[k][i].charAt(j)) {
+                        sum++;
+                    }
+                }
+                matrixA[i][j]=sum;
+            }
+
+        }
+
+        return matrixA;
+    }
+
+    public int[][] genB(String[][] x, int[][] keys){
+        int[][] matrixB=new int[x[0][0].length()][x[0][0].length()];
+        String[][] xi=new String[x.length][x[0][0].length()];
+        String[][] yi=new String[x.length][x[0][0].length()];
+        String[][] y=new String[x.length][x[0][0].length()];
+        for (int i=0;i<x.length;i++){
+            for (int j=0;j<x[i][0].length();j++){
+                xi[i][j]=getXi(x[i],j);
+                yi[i][j]=getYi(xi[i][j],keys[i%keys.length]);
+                y[i][j]=func(x[i][0],keys[i%keys.length]);
+                //System.out.println(y[i][j]+" "+yi[i][j]);
+            }
+        }
+
+        int sum=0;
+        for (int i=0;i<matrixB.length;i++){
+            for (int j=0;j<matrixB[i].length;j++){
+                sum=0;
+                for (int k=0;k<x.length;k++){
+                    //System.out.println(yi[k][j]+" "+y[k][j]);
+                    //if (yi[k][i].charAt(j)!= y[k][i].charAt(j)) {
+                    if (getHammingWeight(yi[k][i],y[k][i])==j) {
+                        sum++;
+                    }
+                }
+                matrixB[i][j]=sum;
+            }
+
+        }
+
+        return matrixB;
+
+    }
+
+    public int getHammingWeight(String str1, String str2){
+        int count=0;
+        int[] a1=binStrToIntArray(str1);
+        int[] a2=binStrToIntArray(str2);
+        for (int i=0;i<a1.length;i++){
+            if (a1[i]!=a2[i]){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public double getD1(int[][] matrixB, int Ulen){
+        int sum=0;
+        double res=0;
+        for (int i=0;i<matrixB.length;i++){
+            sum=0;
+            for (int j=0;j<matrixB.length;j++){
+                sum+=(j+1)*matrixB[i][j];
+            }
+            res+=(double)sum/(double)Ulen;
+        }
+        res/=matrixB.length;
+        return res;
+    }
+
+    public double getD2(int[][] matrixA){
+        double countA0=0;
+        for (int i=0;i<matrixA.length;i++){
+            for (int j=0;j<matrixA[i].length;j++){
+                if (matrixA[i][j]==0){
+                    countA0++;
+                }
+            }
+        }
+
+        return 1-countA0/(matrixA.length*matrixA.length);
+    }
+
+    public double getD3(int[][] matrixB, int Ulen){
+        double sum2=0, sum=0;
+        for (int i=0;i<matrixB.length;i++){
+            sum=0;
+            for (int j=0;j<matrixB[i].length;j++){
+                sum+=2*(j+1)*matrixB[i][j];
+            }
+            sum=sum/Ulen-matrixB[0].length;
+            sum2=Math.abs(sum);
+        }
+
+        return 1-sum2/(matrixB.length*matrixB[0].length);
+    }
+
+    public double getD4(int[][] matrixA, int Ulen){
+        double sum=0;
+        for (int i=0;i<matrixA.length;i++){
+            for (int j=0;j<matrixA[i].length;j++){
+                sum+=Math.abs(2*matrixA[i][j]/Ulen-1);
+            }
+        }
+
+        return 1-sum/(matrixA.length*matrixA[0].length);
+    }
+
+
+    public int[][] countChangedBits(String[] block,int[][] subKeys){
         int[][] count=new int[3][rounds];
         Arrays.fill(count[0],0);
         Arrays.fill(count[1],0);
@@ -319,10 +479,10 @@ public class Gost {
 
         // funcType1, keyType1, changed bit at block
         //for (int i=0)
-        String[] unchF= doEncrypt(block,subKeys,funcType,true,true);
-        String[] uncFBlockChanged= doEncrypt(blockCh,subKeys,funcType,true, true);
-        String[] uncFKeyChanged= doEncrypt(block,subKeysCh,funcType,true, true);
-        String[] uncFKeyChangedBlockChanged= doEncrypt(blockCh,subKeysCh,funcType,true, true);
+        String[] unchF= doEncrypt(block,subKeys,false,true);
+        String[] uncFBlockChanged= doEncrypt(blockCh,subKeys,false, true);
+        String[] uncFKeyChanged= doEncrypt(block,subKeysCh,false, true);
+        String[] uncFKeyChangedBlockChanged= doEncrypt(blockCh,subKeysCh,false, true);
 
 
         for (int i=0;i<unchF.length;i++){
